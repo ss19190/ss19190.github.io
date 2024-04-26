@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Progress</title>
+    <link rel="icon" href="../img/icon.png">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, #b3e0ff, #4da6ff);
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100%;
+        }
+
+
+        .right {
+
+            display: grid;
+            grid-template-rows: auto auto auto auto;
+        }
+
+        .left {
+            display: grid;
+            grid-template-rows: 1fr 4fr;
+
+        }
+
+        .map {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 5%;
+            background-image: url("../img/mine.svg");
+
+            background-size: 100% 100%;
+            position: relative;
+        }
+
+        .icons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        .detections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .button_class {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="green">
+            <div class="left">
+                <img src="../img/logo.PNG" alt="logo" width="60%">
+                <div class="map" id="map">
+                    <img src="../img/blue_ball.png" alt="blue_ball" id="blue_ball" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/purple_ball.png" alt="purple_ball" id="purple_ball" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/red_ball.png" alt="red_ball" id="red_ball" width="2%" style="position: absolute;">
+                    <img src="../img/yellow_ball1.png" alt="yellow_ball" id="yellow_ball1" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/yellow_ball2.png" alt="yellow_ball" id="yellow_ball2" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/yellow_ball3.png" alt="yellow_ball" id="yellow_ball3" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/yellow_ball4.png" alt="yellow_ball" id="yellow_ball4" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/yellow_ball5.png" alt="yellow_ball" id="yellow_ball5" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/yellow_ball6.png" alt="yellow_ball" id="yellow_ball6" width="2%"
+                        style="position: absolute;">
+                    <img src="../img/drone.png" alt="drone" id="drone" width="5%" style="position: absolute;">
+
+                </div>
+                <div class="icons">
+
+                    <div><img src="../img/drone.png" alt="drone" width="20%">Drone</div>
+                    <div><img src="../img/purple_ball.png" alt="blue_ball" width="15%">Balls</div>
+                    <div><img src="../img/parking.png" alt="purple_ball" width="10%">Robot parking</div>
+                    <div><img src="../img/takeoff.png" alt="red_ball" width="10%">Drone takeoff & landing site</div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="blue">
+            <div class="right">
+                <div class="stats">
+                    <div>
+                        <h2>Dron stats:</h2>
+                        <p id="position"></p>
+                        <p id="speed"></p>
+                        <p id="height"></p>
+                    </div>
+                    <div>
+                        <h3>Mission Progress:</h3>
+                        <p id="dropped_barrel"></p>
+                        <p id="dropped"></p>
+                        <p id="picked_up"></p>
+                    </div>
+                </div>
+                <h3>Balls detections:</h3>
+                <div class="detections">
+                    <div>
+                        <p id="red"></p>
+                        <p id="blue"></p>
+                        <p id="purple"></p>
+                        <p id="yellow_1"></p>
+                        <p id="yellow_2"></p>
+                    </div>
+                    <div>
+                        <p id="yellow_3"></p>
+                        <p id="yellow_4"></p>
+                        <p id="yellow_5"></p>
+                        <p id="yellow_6"></p>
+                    </div>
+
+                </div>
+
+
+                <div>
+                    <h3>Status:</h3>
+                    <p id="status"></p>
+                </div>
+
+                <div class="button_class">
+
+                    <button class="button"><a href="../raport.pdf" download>Generate PDF</a></button>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    // Get references to the container and image elements
+    const container = document.getElementById('map');
+
+    function setImageCoordinatesRelativeToCenter(xOffsetPercent, yOffsetPercent, imageId) {
+        const image = document.getElementById(imageId);
+        // Get the dimensions and position of the viewport
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Get the dimensions and position of the container (div) relative to the viewport
+        const containerRect = container.getBoundingClientRect();
+        const containerWidthPercent = (containerRect.width / viewportWidth) * 100;
+        const containerHeightPercent = (containerRect.height / viewportHeight) * 100;
+        const containerLeftPercent = (containerRect.left / viewportWidth) * 100;
+        const containerTopPercent = (containerRect.top / viewportHeight) * 100;
+
+        // Calculate the center of the container in percentages
+        const centerXPercent = containerLeftPercent + containerWidthPercent / 2;
+        const centerYPercent = containerTopPercent + containerHeightPercent / 2;
+
+        // Calculate the new coordinates relative to the center in percentages
+        const newXPercent = centerXPercent + xOffsetPercent;
+        const newYPercent = centerYPercent + yOffsetPercent;
+
+        // Set the position of the image within the container
+        image.style.left = newXPercent + '%';
+        image.style.top = newYPercent + '%';
+    }
+
+    // Example: Dynamically change the coordinates of the image relative to the center of the div
+    setImageCoordinatesRelativeToCenter(18, 48, 'blue_ball'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(30, 67, 'purple_ball'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(24, 58, 'red_ball'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(18, 58, 'yellow_ball1'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(18, 67, 'yellow_ball2'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(24, 48, 'yellow_ball3'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(24, 67, 'yellow_ball4'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(30, 48, 'yellow_ball5'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(30, 58, 'yellow_ball6'); // Set initial coordinates with percentages
+    setImageCoordinatesRelativeToCenter(10, 74, 'drone'); // Set initial coordinates with percentages
+
+    document.getElementById("position").innerHTML = "Position: 10, 74";
+    document.getElementById("speed").innerHTML = "Speed: 0.5 m/s";
+    document.getElementById("height").innerHTML = "Height: 10 m";
+    document.getElementById("dropped_barrel").innerHTML = "Balls dropped into barrel: 0";
+    document.getElementById("dropped").innerHTML = "Balls dropped generally: 0";
+    document.getElementById("picked_up").innerHTML = "Balls picked up: 0";
+    document.getElementById("red").innerHTML = "Red: 24, 58";
+    document.getElementById("blue").innerHTML = "Blue: 18, 48";
+    document.getElementById("purple").innerHTML = "Purple: 30, 67";
+    document.getElementById("yellow_1").innerHTML = "Yellow 1: 18, 58";
+    document.getElementById("yellow_2").innerHTML = "Yellow 2: 18, 67";
+    document.getElementById("yellow_3").innerHTML = "Yellow 3: 24, 58";
+    document.getElementById("yellow_4").innerHTML = "Yellow 4: 24, 67";
+    document.getElementById("yellow_5").innerHTML = "Yellow 5: 30, 48";
+    document.getElementById("yellow_6").innerHTML = "Yellow 6: 30, 58";
+    document.getElementById("status").innerHTML = "Drone is currently flying";
+
+
+</script>
+
+</html>
